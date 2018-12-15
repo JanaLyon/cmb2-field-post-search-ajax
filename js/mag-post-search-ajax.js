@@ -1,6 +1,6 @@
 (function($) {
   $(function() {
-	
+
 	$('.cmb-post-search-ajax').each(
 		function () {
 			
@@ -12,23 +12,25 @@
 				type: 'POST',
 				triggerSelectOnValidInput: false,
 				showNoSuggestionNotice: true,
-				transformResult: function(r) {
-					var suggestions = $.parseJSON(r);
-					if($('#'+fid+'_results li').length){
+				transformResult: function(result) {
+					var suggestions = JSON.parse(result);
+					if($('#'+fid+'_results li').length) {
 						var selected_vals 	= Array();
 						var d 				= 0;
 						$('#'+fid+'_results input').each(function(index, element) {
                             selected_vals.push( $(this).val() );
                         });
-						$(suggestions).each(function(ri, re){
-							if($.inArray((re.data).toString(), selected_vals) > -1){
-								suggestions.splice(ri-d, 1);
+						$(suggestions).each(function(index, value){
+							if($.inArray((value.data).toString(), selected_vals) > -1){
+								suggestions.splice(index-d, 1);
 								d++;
 							}
 						});
+
 					}
-					$(suggestions).each(function(ri, re){
-						re.value = $('<textarea />').html(re.value).text();
+					//dont show this around it needs a bit of... editing
+					$(suggestions).each(function(index, value){
+                        value.value = $('<textarea />').html(re.value).text();
 					});
 					return {suggestions: suggestions};
 				},
