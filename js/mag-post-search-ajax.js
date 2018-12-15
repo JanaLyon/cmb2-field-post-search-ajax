@@ -30,7 +30,7 @@
 					}
 					//dont show this around it needs a bit of... editing
 					$(suggestions).each(function(index, value){
-                        value.value = $('<textarea />').html(re.value).text();
+                        value.value = $('<textarea />').html(value.value).text();
 					});
 					return {suggestions: suggestions};
 				},
