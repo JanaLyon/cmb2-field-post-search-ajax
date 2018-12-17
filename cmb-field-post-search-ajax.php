@@ -42,55 +42,42 @@ if ( ! class_exists( 'MAG_CMB2_Field_Post_Search_Ajax' ) ) {
 		/**
 		 * Render field
 		 */
-		public function render( $field, $value, $object_id, $object_type, $field_type ) {
+		public function render( $field, $postIds, $object_id, $object_type, $field_type ) {
 			$this->setup_admin_scripts();
 			$field_name = $field->_name();
+			$field_id = $field->id();
 
-			if ( $field->args( 'limit' ) > 1 ) {
-				echo '<ul class="cmb-post-search-ajax-results" id="' . $field_name . '_results">';
-				if ( isset( $value ) && ! empty( $value ) ) {
-					if ( ! is_array( $value ) ) {
-						$value = array( $value );
-					}
-					foreach ( $value as $val ) {
-						$handle = ( $field->args( 'sortable' ) ) ? '<span class="hndl"></span>' : '';
-						if ( $field->args( 'object_type' ) == 'user' ) {
-							$guid  = get_edit_user_link( $val );
-							$user  = get_userdata( $val );
-							$title = $user->display_name;
-						} else {
-							$guid  = get_edit_post_link( $val );
-							$title = get_the_title( $val );
-						}
-						echo '<li>' . $handle . '<input type="hidden" name="' . $field_name . '_results[]" value="' . $val . '"><a href="' . $guid . '" target="_blank" class="edit-link">' . $title . '</a><a class="remover"><span class="dashicons dashicons-no"></span><span class="dashicons dashicons-dismiss"></span></a></li>';
-					}
+
+			echo '<ul class="cmb-post-search-ajax-results" id="' . $field_id . '_results">';
+			if ( isset( $postIds ) && ! empty( $postIds ) ) {
+				if ( ! is_array( $postIds ) ) {
+					$postIds = array( $postIds );
 				}
-				echo '</ul>';
-				$field_value = '';
-			} else {
-				if ( is_array( $value ) ) {
-					$value = $value[0];
+				foreach ( $postIds as $postId ) {
+					$guid  = get_edit_post_link( $postId );
+					$title = get_the_title( $postId );
+					echo '<li><span class="hndl"></span>';
+					echo $field_type->input( array(
+						'name'  => $field_type->_name( '[]' ),
+						'id'    => $field_type->_id( 'results' ),
+						'value' => $postId,
+						'type'  => 'hidden',
+						'desc'  => '',
+					) );
+
+					echo '<a href="' . $guid . '" target="_blank" class="edit-link">' . $title . '</a><a class="remover"><span class="dashicons dashicons-no"></span><span class="dashicons dashicons-dismiss"></span></a></li>';
 				}
-
-				$field_value = ( $value ? get_the_title( $value ) : '' );
-
-				echo $field_type->input( array(
-					'type'  => 'hidden',
-					'name'  => $field_name . '_results',
-					'value' => $value,
-					'desc'  => false
-				) );
 			}
+			echo '</ul>';
 
 			echo $field_type->input( array(
 				'type'           => 'text',
-				'name'           => $field_name,
-				'id'             => $field_name,
+				'name'           => $field_name.'[]',
+				'id'             => $field_id,
 				'class'          => 'cmb-post-search-ajax',
-				'value'          => $field_value,
+				'value'          => '',
 				'desc'           => false,
 				'data-limit'     => $field->args( 'limit' ) ? $field->args( 'limit' ) : '1',
-				'data-sortable'  => $field->args( 'sortable' ) ? $field->args( 'sortable' ) : '0',
 				'data-object'    => $field->args( 'object_type' ) ? $field->args( 'object_type' ) : 'post',
 				'data-queryargs' => $field->args( 'query_args' ) ? htmlspecialchars( json_encode( $field->args( 'query_args' ) ), ENT_QUOTES, 'UTF-8' ) : ''
 			) );
@@ -102,16 +89,10 @@ if ( ! class_exists( 'MAG_CMB2_Field_Post_Search_Ajax' ) ) {
 		}
 
 		/**
-		 * Optionally save the latitude/longitude values into two custom fields
+		 *
 		 */
 		public function sanitize( $override_value, $value, $object_id, $field_args ) {
-			$fid = $field_args['id'];
-			if ( ! empty( $field_args['render_row_cb'][0]->data_to_save[ $fid . '_results' ] ) ) {
-				$value = $field_args['render_row_cb'][0]->data_to_save[ $fid . '_results' ];
-			} else {
-				$value = false;
-			}
-
+			array_pop($value);
 			return $value;
 		}
 
@@ -123,20 +104,8 @@ if ( ! class_exists( 'MAG_CMB2_Field_Post_Search_Ajax' ) ) {
 			if ( self::$url ) {
 				return self::$url . $path;
 			}
-
-			/**
-			 * Set the variable cmb2_fpsa_dir
-			 */
 			$cmb2_fpsa_dir = trailingslashit( dirname( __FILE__ ) );
-
-			/**
-			 * Use CMB2_Utils to gather the url from cmb2_fpsa_dir
-			 */
 			$cmb2_fpsa_url = CMB2_Utils::get_url_from_dir( $cmb2_fpsa_dir );
-
-			/**
-			 * Filter the CMB2 FPSA location url
-			 */
 			self::$url = trailingslashit( apply_filters( 'cmb2_fpsa_url', $cmb2_fpsa_url, self::VERSION ) );
 
 			return self::$url . $path;
