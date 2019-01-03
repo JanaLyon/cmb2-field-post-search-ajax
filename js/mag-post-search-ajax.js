@@ -2,8 +2,12 @@
     $(function () {
 
         function init(field) {
-
+            if ($(field).attr('data-limit') <= $('#' + $(field).attr('id') + '_results' + ' li').length) {
+                $(field).hide();
+                // $(field).prop('disabled', 'disabled');
+            }
             var fid = $(field).attr('id');
+            //todo: suppliment a way to get cat into args so it filters ideally via a seperate look up
             var query_args = $(field).attr('data-queryargs');
             var object = $(field).attr('data-object');
             $(field).devbridgeAutocomplete({
@@ -11,14 +15,6 @@
                 type: 'POST',
                 triggerSelectOnValidInput: false,
                 showNoSuggestionNotice: true,
-                transformResult: function (result) {
-                    var suggestions = JSON.parse(result);
-
-                    $(suggestions).each(function (index, value) {
-                        value.value = $('<textarea />').html(value.value).text();
-                    });
-                    return {suggestions: suggestions};
-                },
                 params: {
                     action: 'cmb_post_search_ajax_get_results',
                     psacheck: psa.nonce,
@@ -41,7 +37,8 @@
 
                     $(field).val('');
                     if (limit <= $('#' + lid + ' li').length) {
-                        $(field).prop('disabled', 'disabled');
+                        $(field).hide();
+                        // $(field).prop('disabled', 'disabled');
                     }
                     else {
                         $(field).focus();
@@ -80,7 +77,8 @@
             $(this).parent('li').fadeOut(400, function () {
                 var iid = $(this).parents('ul').attr('id').replace('_results', '');
                 $(this).remove();
-                $('#' + iid).removeProp('disabled');
+                $('#' + iid).show();
+                // $('#' + iid).removeProp('disabled');
                 $('#' + iid).devbridgeAutocomplete('clearCache');
             });
         });

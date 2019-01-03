@@ -159,7 +159,7 @@ if ( ! class_exists( 'MAG_CMB2_Field_Post_Search_Ajax' ) ) {
 
 						// Define filter "mag_cmb_post_search_ajax_result" to allow customize ajax results.
 						$datas[] = apply_filters( 'mag_cmb_post_search_ajax_result', array(
-							'value' => get_the_title() . ' (' . $cats . ')',
+							'value' => html_entity_decode(get_the_title() . ' (' . $cats . ')'),
 							'data'  => get_the_ID(),
 							'guid'  => get_edit_post_link()
 						) );
@@ -167,7 +167,9 @@ if ( ! class_exists( 'MAG_CMB2_Field_Post_Search_Ajax' ) ) {
 				}
 			}
 			wp_reset_postdata();
-			die( json_encode( $datas ) );
+			$return = new stdClass();
+			$return->suggestions = $datas;
+			die( json_encode( $return, JSON_UNESCAPED_UNICODE ) );
 		}
 	}
 

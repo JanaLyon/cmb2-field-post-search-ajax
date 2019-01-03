@@ -13,7 +13,7 @@ input.cmb-post-search-ajax { width: 100%; }
 .cmb-post-search-ajax-results .hndl { font-size: 13px; line-height: 16px; color: #ccc; margin: 0 8px 0 0; height: 16px; cursor: ns-resize; }
 .cmb-post-search-ajax-results .hndl:before { content: '\2807'; }
 .cmb-post-search-ajax-results .edit-link { color: #333; text-decoration: none; }
-.cmb-post-search-ajax-results .edit-link:hover { color: #00a0d2; text-decoration: underline; }
+.cmb-post-search-ajax-results edit-link:hover { color: #00a0d2; text-decoration: underline; }
 .cmb-post-search-ajax-results .remover { float: right; cursor:pointer; color: #ccc; }
 .cmb-post-search-ajax-results .remover span { height: 16px; line-height: 16px; font-size: 14px; }
 .cmb-post-search-ajax-results .dashicons-dismiss { display: none; }
